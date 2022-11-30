@@ -1,4 +1,4 @@
-# AdventOfCOde2022
+# AdventOfCode2022
 
 The repo for the yearly coding event !
 
