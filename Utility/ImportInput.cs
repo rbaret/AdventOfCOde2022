@@ -62,5 +62,10 @@ namespace Utility
             }
             return myArray;
         }
+
+        // Read input file as a single string
+        public static string ToString(string @path){
+            return File.ReadAllText(@path);
+        }
     }
 }
