@@ -21,6 +21,16 @@ namespace Utility
             return myList;
         }
 
+        // Read input file and put each line in a jagged array of char by parsing each line
+        public static char[][] ToCharJaggedArray(string @path){
+            List<char[]> myList = new List<char[]>();
+            foreach(string line in File.ReadAllLines(@path)){
+                myList.Add(line.ToCharArray());
+            }
+            return myList.ToArray();
+        }
+
+
         // Read input file and put each line in an array of string
         public static string[] ToStringArray(string @path){
             return File.ReadAllLines(@path);
