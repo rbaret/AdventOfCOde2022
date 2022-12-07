@@ -98,27 +98,35 @@ static void Part1(List<List<char>> stacksList, string path)
 static void Part2(List<List<char>> stacksList, string path)
 {
     List<List<char>> stacks = stacksList.Select(x => x.ToList()).ToList();
+
+    Console.WriteLine("Initial state of stacks");
+    foreach (List<char> stack in stacks)
+    {
+        foreach (char crate in stack)
+        {
+            Console.Write("[{0}]", crate);
+        }
+        Console.Write("\r\n");
+    }
     foreach (string line in File.ReadLines(@path))
     {
         int[] move = line.Split(',').Select(int.Parse).ToArray();
-        for (int crates = 1; crates <= move[0]; crates++)
-        {
-            Console.WriteLine("Move {0} crates from stack {1} to stack {2}", move[0], move[1], move[2]);
-            // // Visualization of the stacks after each move
-            foreach (List<char> stack in stacks)
-            {
-                Console.Write("Stack {0} : ", stacks.IndexOf(stack) + 1);
-                foreach (char crate in stack)
-                {
-                    Console.Write("[{0}]", crate);
-                }
-                Console.Write("\r\n");
-            }
-            Thread.Sleep(20);
-            Console.Clear();
-            stacks[move[2] - 1].AddRange(stacks[move[1] - 1].GetRange(stacks[move[1] - 1].Count - move[0], move[0]));
-            stacks[move[1] - 1].RemoveRange(stacks[move[1] - 1].Count-1 - move[0], move[0]);
-        }
+        // // Visualization of the stacks after each move
+        // foreach (List<char> stack in stacks)
+        // {
+        //     Console.Write("Stack {0} : ", stacks.IndexOf(stack) + 1);
+        //     foreach (char crate in stack)
+        //     {
+        //         Console.Write("[{0}]", crate);
+        //     }
+        //     Console.Write("\r\n");
+        // }
+        // Thread.Sleep(20);
+
+        // Console.Clear();
+        char[] cratesToMove = stacks[move[1] - 1].GetRange(stacks[move[1] - 1].Count - move[0], move[0]).ToArray();
+        stacks[move[2] - 1].AddRange(cratesToMove);
+        stacks[move[1] - 1].RemoveRange(stacks[move[1] - 1].Count - move[0], move[0]);
     }
 
     StringBuilder sb = new StringBuilder();
