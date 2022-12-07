@@ -51,10 +51,13 @@ Console.Clear();
 string path = "input_parsed.txt";
 Part1(stacks, path);
 Console.ReadKey();
+Console.Clear();
 Part2(stacks, path);
 // Part 1
 static void Part1(List<List<char>> stacksList, string path)
 {
+    Console.WriteLine("Press any key to start");
+    Console.ReadKey();
     List<List<char>> stacks = stacksList.Select(x => x.ToList()).ToList();
     foreach (string line in File.ReadLines(@path))
     {
@@ -62,7 +65,7 @@ static void Part1(List<List<char>> stacksList, string path)
         for (int crates = 1; crates <= move[0]; crates++)
         {
             Console.WriteLine("Move {0} crates from stack {1} to stack {2}", move[0], move[1], move[2]);
-            // // Visualization of the stacks after each move
+            // // Fancy visualization of the stacks after each move
             // foreach (List<char> stack in stacks)
             // {
             //     Console.Write("Stack {0} : ", stacks.IndexOf(stack) + 1);
@@ -73,7 +76,7 @@ static void Part1(List<List<char>> stacksList, string path)
             //     Console.Write("\r\n");
             // }
             // Thread.Sleep(20);
-            // Console.Clear();
+            Console.Clear();
             stacks[move[2] - 1].Add(stacks[move[1] - 1].Last());
             stacks[move[1] - 1].RemoveAt(stacks[move[1] - 1].Count - 1);
         }
@@ -108,10 +111,12 @@ static void Part2(List<List<char>> stacksList, string path)
         }
         Console.Write("\r\n");
     }
+    Console.WriteLine("Press any key to start");
+    Console.ReadKey();
     foreach (string line in File.ReadLines(@path))
     {
         int[] move = line.Split(',').Select(int.Parse).ToArray();
-        // // Visualization of the stacks after each move
+        // Fancy visualization of the stacks after each move
         // foreach (List<char> stack in stacks)
         // {
         //     Console.Write("Stack {0} : ", stacks.IndexOf(stack) + 1);
@@ -121,9 +126,9 @@ static void Part2(List<List<char>> stacksList, string path)
         //     }
         //     Console.Write("\r\n");
         // }
-        // Thread.Sleep(20);
+        // Thread.Sleep(10);
 
-        // Console.Clear();
+        Console.Clear();
         char[] cratesToMove = stacks[move[1] - 1].GetRange(stacks[move[1] - 1].Count - move[0], move[0]).ToArray();
         stacks[move[2] - 1].AddRange(cratesToMove);
         stacks[move[1] - 1].RemoveRange(stacks[move[1] - 1].Count - move[0], move[0]);
