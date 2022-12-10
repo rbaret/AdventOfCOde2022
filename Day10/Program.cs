@@ -10,7 +10,6 @@ Console.WriteLine("Part 2 : the 8 letters are :");
         for (int j = 0; j < 40; j++)
         {
             Console.Write(screen[i, j]);
-            Thread.Sleep(100);
         }
         Console.WriteLine();
     }
