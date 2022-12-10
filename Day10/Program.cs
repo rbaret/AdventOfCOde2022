@@ -3,12 +3,14 @@
 char[,] screen = new char[6, 40];
 Console.WriteLine("Part 1 : the sum of the 6 signal strengths is " + Solve(input));
 Console.WriteLine("Part 2 : the 8 letters are :");
+
 // Print the matrix on the screen
     for (int i = 0; i < 6; i++)
     {
         for (int j = 0; j < 40; j++)
         {
             Console.Write(screen[i, j]);
+            Thread.Sleep(100);
         }
         Console.WriteLine();
     }
@@ -30,8 +32,8 @@ int Solve(List<string> input)
     {
         // Let's draw the pixels for part 2
         int screenLine = clockCycle / 40;
-        int screenPixel = clockCycle % 40;
-        if (isSpriteOverlapping(screenPixel, X))
+        int screenPixel = (clockCycle-1) % 40;
+        if (isSpriteOverlapping(screenPixel, X-1)) // X-1 because we start with an index of 1 when first cell in row is 0
         {
             screen[screenLine, screenPixel] = '#';
         }
