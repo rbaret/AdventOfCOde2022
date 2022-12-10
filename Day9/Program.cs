@@ -1,23 +1,17 @@
 ﻿List<string> input = File.ReadAllLines("input.txt").ToList();
-List<Tuple<int, int>> knots = new List<Tuple<int, int>>();
-for (int i = 0; i < 10; i++)
-{
-    knots.Add(new Tuple<int, int>(0, 0)); // Simulate a 10 knots rope
-}
-Console.WriteLine("Part 1: The tail has visited at least {0} positions", Part1(input));
-Console.WriteLine("Part 2: The tail has visited at least {0} positions", Part2(input, knots));
+Console.WriteLine("Part 1: The tail has visited at least {0} positions", followTailKnot(input, 2)); 
+Console.WriteLine("Part 2: The tail has visited at least {0} positions", followTailKnot(input, 10));
 
-// Part 1
-// Trace the path of the tail and count the number of unique positions it visits
 
-int Part1(List<string> input)
+int followTailKnot(List<string> input, int knotsNumber)
 {
     List<string> visited = new List<string>();
-    int x = 0;
-    int y = 0;
-    Tuple<int, int> headPosition = new Tuple<int, int>(0, 0);
-    Tuple<int, int> tailPosition = new Tuple<int, int>(0, 0);
-    visited.Add(x + "," + y);
+    List<Tuple<int, int>> knots = new List<Tuple<int, int>>();
+    for (int i = 0; i < knotsNumber; i++)
+    {
+        knots.Add(new Tuple<int, int>(0, 0)); // Simulate a 10 knots rope
+    }
+    visited.Add(0 + "," + 0);
     char direction;
     foreach (string line in input)
     {
@@ -26,46 +20,47 @@ int Part1(List<string> input)
         int distance = int.Parse(moveDescription[1]);
         for (int i = 0; i < distance; i++)
         {
+            List<Tuple<int, int>> newCoords = new List<Tuple<int, int>>();
+            // Set new head coordinates
             switch (direction)
             {
                 case 'U':
-                    y++;
+                    newCoords.Add(new Tuple<int, int>(knots[0].Item1 + 1, knots[0].Item2));
                     break;
                 case 'D':
-                    y--;
+                    newCoords.Add(new Tuple<int, int>(knots[0].Item1 - 1, knots[0].Item2));
                     break;
                 case 'R':
-                    x++;
+                    newCoords.Add(new Tuple<int, int>(knots[0].Item1, knots[0].Item2 + 1));
                     break;
                 case 'L':
-                    x--;
+                    newCoords.Add(new Tuple<int, int>(knots[0].Item1, knots[0].Item2 - 1));
                     break;
             }
-            headPosition = new Tuple<int, int>(x, y);
-            if (measureGridDistance(headPosition, tailPosition) > 1)
+            knots.RemoveAt(0); // Remove head from previous list as it's now in a new list
+            int index = 0; // Keep track of the knot weŕe analyzing
+            foreach (Tuple<int, int> knot in knots)
             {
-                switch (direction)
+                // Measure distance between current knot and preceding knot
+                // we compare current index from old knots with same index of new knots list because head has been removed
+                // and all knots have been shifted by 1
+                if (measureGridDistance(newCoords[index], knot) > 1)
                 {
-                    case 'U':
-                        tailPosition = new Tuple<int, int>(headPosition.Item1, headPosition.Item2 - 1);
-                        break;
-                    case 'D':
-                        tailPosition = new Tuple<int, int>(headPosition.Item1, headPosition.Item2 + 1);
-                        break;
-                    case 'R':
-                        tailPosition = new Tuple<int, int>(headPosition.Item1 - 1, headPosition.Item2);
-                        break;
-                    case 'L':
-                        tailPosition = new Tuple<int, int>(headPosition.Item1 + 1, headPosition.Item2);
-                        break;
+                    newCoords.Add(moveKnot(knot, newCoords[index]));
                 }
+                else
+                {
+                    newCoords.Add(knot);
+                }
+                index++;
             }
-
-            if (!visited.Contains(tailPosition.Item1 + "," + tailPosition.Item2))
-                visited.Add(tailPosition.Item1 + "," + tailPosition.Item2);
+            knots = newCoords;
+            if (!visited.Contains(knots.Last().Item1 + "," + knots.Last().Item2))
+                visited.Add(knots.Last().Item1 + "," + knots.Last().Item2);
         }
     }
     return visited.Count;
+
 }
 
 int measureGridDistance(Tuple<int, int> head, Tuple<int, int> tail)
@@ -76,63 +71,55 @@ int measureGridDistance(Tuple<int, int> head, Tuple<int, int> tail)
         return Math.Abs(head.Item2 - tail.Item2);
 }
 
-int Part2(List<string> input, List<Tuple<int, int>> knots)
+Tuple<int, int> moveKnot(Tuple<int, int> knot, Tuple<int, int> previousKnot)
 {
-    List<string> visited = new List<string>();
-    int x = 0;
-    int y = 0;
-    Tuple<int, int> headPosition = knots.First();
-    Tuple<int, int> tailPosition = knots.Last();
-    visited.Add(x + "," + y);
-    char direction;
-    foreach (string line in input)
+    int lineDiff = Math.Abs(previousKnot.Item1 - knot.Item1);
+    int columnDiff = Math.Abs(previousKnot.Item2 - knot.Item2);
+    int newX = knot.Item1;
+    int newY = knot.Item2;
+    // Here we go for the hellś algorithm
+    if (lineDiff == 1 && columnDiff > 1) // knot 1 line below/above the previous knot and at least 2 cols behind/after
     {
-        string[] moveDescription = line.Split(' ');
-        direction = moveDescription[0].ToCharArray()[0];
-        int distance = int.Parse(moveDescription[1]);
-        for (int i = 0; i < distance; i++)
-        {
-            List<Tuple<int, int>> newCoords = new List<Tuple<int, int>>();
-            switch (direction)
-            {
-                case 'U':
-                    y++;
-                    break;
-                case 'D':
-                    y--;
-                    break;
-                case 'R':
-                    x++;
-                    break;
-                case 'L':
-                    x--;
-                    break;
-            }
-            headPosition = new Tuple<int, int>(x, y);
-            newCoords.Add(headPosition);
-            int index = 1; // Keep track of the knot weŕe analyzing
-            foreach (Tuple<int, int> knot in knots)
-            {
-                if (index > 0)
-                { // Skip the head knot
-                    if (measureGridDistance(newCoords[index - 1], knot) > 1)
-                    {
-                        // Move the knot depending on the direction of the previous node
-
-                        // TBD
-                    }
-                    else
-                    {
-                        newCoords.Add(knot);
-                    }
-                }
-                index++;
-            }
-            knots = newCoords;
-            tailPosition = knots.Last();
-            if (!visited.Contains(tailPosition.Item1 + "," + tailPosition.Item2))
-                visited.Add(tailPosition.Item1 + "," + tailPosition.Item2);
-        }
+        newX = previousKnot.Item1; // reach same line
+        if (knot.Item2 > previousKnot.Item2) // check if previous knot is on the left or the right
+            newY = knot.Item2 - 1; // If the previous knot is at the left of the current one, move left
+        else
+            newY = knot.Item2 + 1; // else move right
     }
-    return visited.Count;
+    else if (columnDiff == 1 && lineDiff > 1) // knot 1 column left/right from the previous one
+    {
+        newY = previousKnot.Item2; // move to the same column
+        if (knot.Item1 > previousKnot.Item1)// check if previous knot is above or below
+            newX = knot.Item1 - 1; // If the previous kot is below, move down
+        else
+            newX = knot.Item1 + 1; // else move up
+    }
+    else if (lineDiff > 1 && columnDiff > 1) // This situation happens when the previous node was 1,1 away and is moved diagonally leasing to 2,2 distance or more
+    {
+        // Same checks and moves as above
+        if (knot.Item1 > previousKnot.Item1)
+            newX = knot.Item1 - 1;
+        else
+            newX = knot.Item1 + 1;
+        if (knot.Item2 > previousKnot.Item2)
+            newY = knot.Item2 - 1;
+        else
+            newY = knot.Item2 + 1;
+    }
+    else if (lineDiff == 0) // We stay on the same line, only move left or right
+    {
+        if (knot.Item2 > previousKnot.Item2)
+            newY = knot.Item2 - 1;
+        else
+            newY = knot.Item2 + 1;
+    }
+    else if (columnDiff == 0) // Same if we stay on the same column
+    {
+        if (knot.Item1 > previousKnot.Item1)
+            newX = knot.Item1 - 1;
+        else
+            newX = knot.Item1 + 1;
+    }
+    knot = new Tuple<int, int>(newX, newY);
+    return knot;
 }
