@@ -77,7 +77,7 @@ Tuple<int, int> moveKnot(Tuple<int, int> knot, Tuple<int, int> previousKnot)
     int columnDiff = Math.Abs(previousKnot.Item2 - knot.Item2);
     int newX = knot.Item1;
     int newY = knot.Item2;
-    // Here we go for the hellś algorithm
+    // Here we go for the hell's algorithm
     if (lineDiff == 1 && columnDiff > 1) // knot 1 line below/above the previous knot and at least 2 cols behind/after
     {
         newX = previousKnot.Item1; // reach same line
